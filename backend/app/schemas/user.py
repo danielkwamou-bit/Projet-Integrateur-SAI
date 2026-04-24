@@ -5,19 +5,18 @@ from app.models.user import RoleEnum
  
 class UserCreate(BaseModel):
     nom: str
-    prenom: str
     email: EmailStr
-    mot_de_passe: str
+    password: str
     role: RoleEnum = RoleEnum.consultation
  
  
 class UserOut(BaseModel):
     id: int
     nom: str
-    prenom: str
     email: EmailStr
     role: RoleEnum
-    date_creation: datetime
+    is_active: bool
+    created_at: datetime
  
     class Config:
         from_attributes = True

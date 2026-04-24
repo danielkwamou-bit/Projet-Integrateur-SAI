@@ -8,16 +8,16 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.database import get_db
  
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
  
  
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password[:72])
+    return pwd_context.hash(password)
  
  
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain[:72], hashed)
+    return pwd_context.verify(plain, hashed)
  
  
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
