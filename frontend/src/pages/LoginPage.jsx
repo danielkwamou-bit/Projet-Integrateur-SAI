@@ -1,19 +1,34 @@
 import React, { useState } from 'react';
+import api from '../services/api'
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Simulation d'authentification (à remplacer par votre logique)
-    if (email === 'admin@agrosmart.com' && password === 'demo') {
-      localStorage.setItem('auth', 'true');
-      navigate('/dashboard');
-    } else {
-      alert('Identifiants invalides (admin@agrosmart.com / demo)');
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    try {
+      const formData = new FormData()
+      formData.append('username', email)
+      formData.append('password', password)
+
+      const { data } = await api.post('/auth/login', formData)
+
+      localStorage.setItem('token', data.access_token)
+      onLogin()
+    }
+    catch (err) {
+      setError(err.response?.data?.detail || "Erreur de connexion")
+    }
+    finally {
+      setLoading(false)
     }
   };
 
@@ -22,7 +37,7 @@ const Login = () => {
       <div className="login-card">
         <div className="login-logo">
           <div className="logo-box">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" /><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" /></svg>
           </div>
           <h2>AgroSmart</h2>
           <span>Portail de gestion agricole</span>
@@ -36,9 +51,21 @@ const Login = () => {
             <label>Mot de passe</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••" required />
           </div>
-          <button type="submit" className="login-btn">Se connecter</button>
+          {error && (
+            <div style={{
+              padding: '10px 14px', marginBottom: 12,
+              background: '#fef2f2', border: '1px solid #fecaca',
+              borderRadius: 8, fontSize: 13, color: '#991b1b',
+            }}>
+              {error}
+            </div>
+          )}
+          <button type="submit" className="login-btn" > {loading ? 'Connexion...' : 'Se connecter'}</button>
+          <div className="login-demo">
+            <p>Email : <br /> admin@agriculture.local</p>
+            <p>Mdp : <br /> Admin1234!</p>
+          </div>
         </form>
-        <p className="login-demo">Démo : admin@agrosmart.com / demo</p>
       </div>
 
       <style jsx>{`

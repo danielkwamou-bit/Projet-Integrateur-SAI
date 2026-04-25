@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard.jsx';
 import Login from './pages/LoginPage.jsx';
 import Actionneurs from './pages/Actionneurs.jsx';
@@ -9,11 +9,23 @@ import './styles/dashboard.css';
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
-  const isAuth = localStorage.getItem('auth') === 'true';
-  const isLoginPage = location.pathname === '/';
-  const showSidebar = isAuth && !isLoginPage;
+
+  const [isAuth, setIsAuth] = useState(!!localStorage.getItem("token"))
+
+  const handleLogin = () => {
+    setIsAuth(true)
+    navigate('/dashboard')
+  }
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    setIsAuth(false)
+    navigate('/')
+  }
+
+  // Détermine si la sidebar doit s'afficher
+  const showSidebar = isAuth && location.pathname !== "/"
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
@@ -35,8 +47,8 @@ function App() {
       )}
       <div className={`app-content ${showSidebar ? "main-wrapper" : "auth-wrapper"}`}>
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={isAuth ? <Dashboard /> : <Navigate to="/" />} />
+          <Route path="/" element={isAuth ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />} />
+          <Route path="/dashboard" element={isAuth ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/" />} />
           <Route path="/actionneurs" element={isAuth ? <Actionneurs /> : <Navigate to="/" />} />
           <Route path="/seuils" element={isAuth ? <Seuils /> : <Navigate to="/" />} />
         </Routes>

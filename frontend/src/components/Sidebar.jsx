@@ -42,7 +42,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           <div className="avatar">AD</div>
           <div><div className="user-name">Admin</div><div className="user-role">System</div></div>
         </div>
-        <button className="logout-btn" onClick={() => { localStorage.removeItem('auth'); window.location.href = '/'; }}>
+        <button className="logout-btn" onClick={() => { localStorage.removeItem('token'); window.location.href = '/'; }}>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
           Déconnexion
         </button>
